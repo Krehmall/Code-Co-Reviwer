@@ -1,75 +1,83 @@
-import { useEffect, useState, useRef } from "react";
-import { Box, Button, Center, Container, Heading, Textarea, useColorMode } from "@chakra-ui/react";
-import { CopyIcon } from "@chakra-ui/icons";
+import { useEffect, useState } from "react";
+import { Container, Heading } from "@chakra-ui/react";
 import { useParams } from "react-router";
+import io from "socket.io-client";
 import axios from "axios";
+import CodeBlockInterface from "../components/CodeBlockInterface";
 
+const socket = io.connect("http://localhost:3001");
 axios.defaults.baseURL = process.env.NODE_ENV === "production" ? "/api/code-blocks" : "http://localhost:3000/api/code-blocks";
 
 const SelectedCodeBlock = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [code, setCode] = useState("");
   const [theme, setTheme] = useState("");
-  const textareaRef = useRef(null);
+  const [canEdit, setCanEdit] = useState(true);
   const { Id } = useParams();
 
   useEffect(() => {
-    const loadCodeBlock = async () => {
-      try {
-        console.log("Fetching data...");
-        const { data } = await axios.get("/");
-        console.log("Data fetched:", data);
-        const currCodeBlock = data.find((item) => item._id === Id);
-        if (currCodeBlock) {
-          setCode(currCodeBlock.code);
-          setTheme(currCodeBlock.theme);
-        } else {
-          console.warn(`No code block found with ID ${Id}`);
-        }
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadCodeBlock();
-  }, [Id]);
+    socket.on("code-to-client", (data) => {
+      console.log(data);
+      setCode(data.code);
+    });
 
-  const handleCopy = () => {
-    if (textareaRef.current) {
-      textareaRef.current.select();
-      document.execCommand("copy");
-      alert("Code copied to clipboard!");
-    } else {
-      console.error("Textarea element not found");
+    socket.on("disable-editing", () => {
+      setCanEdit(false);
+      console.log("Editing disabled");
+    });
+
+    socket.on("visitor-count", (count) => {
+      console.log("Visitor count:", count);
+    });
+
+    loadCodeBlock();
+    joinRoom();
+    return leaveRoom;
+  }, [socket, Id]);
+
+  const loadCodeBlock = async () => {
+    try {
+      const { data } = await axios.get("/");
+      const currCodeBlock = data.find((item) => item._id === Id);
+      if (currCodeBlock) {
+        setCode(currCodeBlock.code);
+        setTheme(currCodeBlock.theme);
+      } else {
+        console.warn(`No code block found with ID ${Id}`);
+      }
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleCodeChange = async (e) => {
-    const newCode = e.target.value;
-    setCode(newCode);
-    console.log("Saving Data....");
-    if (newCode) {
-      try {
-        const { data } = await axios.put(`/${Id}`, { code: newCode });
-        console.log("The changes are done:", data);
-      } catch (error) {
-        console.error("Error updating code block:", error);
-      }
+  const joinRoom = () => {
+    socket.emit("join-room", Id);
+  };
+
+  const leaveRoom = () => {
+    return socket.emit("leave-room", Id);
+  };
+
+  const sendCodeEdit = (dataCode) => {
+    if (canEdit) {
+      const codeData = {
+        code: dataCode,
+        room: Id,
+      };
+      socket.emit("code-to-server", codeData);
     }
   };
 
   if (loading) {
     return <div>Loading...</div>;
   }
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
-
   return (
     <>
       <Container maxW="100%" py={5} bg="black" centerContent>
@@ -77,29 +85,7 @@ const SelectedCodeBlock = () => {
           The code block is about "{theme || "Unknown"}"
         </Heading>
       </Container>
-      <Center>
-        <Box p={4} width="600px">
-          <Button onClick={toggleColorMode} mb={4}>
-            Toggle {colorMode === "light" ? "Dark" : "Light"}
-          </Button>
-          <Textarea
-            ref={textareaRef}
-            value={code}
-            onChange={handleCodeChange}
-            fontFamily="monospace"
-            whiteSpace="pre-wrap"
-            p={4}
-            bg={colorMode === "light" ? "gray.100" : "gray.700"}
-            color={colorMode === "light" ? "black" : "white"}
-            borderRadius="md"
-            size="md"
-            minHeight="150px"
-          />
-          <Button mt={2} onClick={handleCopy} leftIcon={<CopyIcon />}>
-            Copy Code
-          </Button>
-        </Box>
-      </Center>
+      <CodeBlockInterface sendCodeEdit={sendCodeEdit} Id={Id} code={code} setCode={setCode} canEdit={canEdit} />
     </>
   );
 };

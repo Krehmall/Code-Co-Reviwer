@@ -67,17 +67,3 @@ export async function updateCodeBlock(Id, code) {
     throw error;
   }
 }
-
-// export async function getCodeBlockById(Id) {
-//   try {
-//     const collection = await getCollection(entity);
-//     const codeBlock = await collection.findOne({ _id: toObjectId(Id) });
-//     if (!codeBlock) {
-//       throw new Error("Code Block not found");
-//     }
-//     return codeBlock;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// }
