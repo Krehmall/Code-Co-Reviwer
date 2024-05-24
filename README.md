@@ -3,7 +3,7 @@
 This is my first FullStack with **React** App, and there was another chalenge.<br> That forced me to use **Socked.io** library in order to make this app<br> work with multiple clients and connected between them.<br>
 In this App I used [React+Vite](https://vitejs.dev/guide/) with **NodeJs** as base. <br>
 This one was made with **Chakra**, which is have alot of ready components.<br>
-To run this App [NodeJs](https://nodejs.org/en/download/current) is required to be installed.
+To run this App [NodeJs](https://nodejs.org/en/download/current) is required to be installed.<br>
 Server and Client communicates between them with API. **MongoDB** was used as data base.<br>
 
 ### How to run the App:
