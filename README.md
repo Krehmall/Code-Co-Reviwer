@@ -10,7 +10,7 @@ Server and Client communicates between them with API. **MongoDB** was used as da
 
 #### First run server part:
 
-- Go to directory **_modules/dbModule.js_** in line number 3 you must write: `const url = "YourMongoBDLink"` .(You must to have [MongoDB](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_general_prosp-brand_gic-null_emea-il_ps-all_desktop_eng_lead&utm_term=mongo%20database&utm_medium=cpc_paid_search&utm_ad=p&utm_ad_campaign_id=1718986534&adgroup=66929800266&cq_cmp=1718986534&gad_source=1&gclid=CjwKCAjwl4yyBhAgEiwADSEjeIfv6Salm2LWP60ZUc-NnBt0FFdoDDQ_jFy_2PpPtbDA2tuydoqNzxoC_M0QAvD_BwE) account)
+- Go to directory **_modules/dbModule.js_** in line number 3 you must write: `const url = "YourMongoBDLink"`.<br> (You must to have [MongoDB](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_general_prosp-brand_gic-null_emea-il_ps-all_desktop_eng_lead&utm_term=mongo%20database&utm_medium=cpc_paid_search&utm_ad=p&utm_ad_campaign_id=1718986534&adgroup=66929800266&cq_cmp=1718986534&gad_source=1&gclid=CjwKCAjwl4yyBhAgEiwADSEjeIfv6Salm2LWP60ZUc-NnBt0FFdoDDQ_jFy_2PpPtbDA2tuydoqNzxoC_M0QAvD_BwE) account)
 
 - Go to console in aplication directory enter command `npm i`
 
